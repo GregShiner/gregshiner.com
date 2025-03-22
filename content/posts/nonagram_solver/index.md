@@ -43,8 +43,6 @@ Before we get into the weeds of solving a problem, it's important to define the 
 <!-- TODO: add graphics -->
 
 # How To Solve a Nonagram
-Let's start with some basic problem solving techniques to solve this. First, let's write down all of the rules and information we have.
-1. 
 The basic concept behind solving these puzzles is to repeatedly apply some rules to figure out what squares must or must not be filled in based on the hints and the current state of the game.
 One observation we can make about this game is that *almost* (We will discuss the exceptions later) all puzzles can be solved just by repeatedly applying some logic to each individual row and column.
 The simplest logic that can be used to do this is to first determine all of the possible valid states of a line.
@@ -57,4 +55,8 @@ So what happens when our initial line isnt't empty and has some squares already 
 ![Solution with a hint of 4 and some initial square](./4line_sol_w_initial.svg)
 Two things of interest happen now in this case. The first is that there is only 2 possible placements of the line of 4. If we try to place the segment further to the right, the solution will no longer be valid, because there will be 5 squares in a row instead of 4. We also see though that in all solutions, the right-most square is empty. This means that there is no possible way for that square to be filled in, so we can mark it as empty with an X.
 
+There are a lot more rules you can apply, but this general notion of finding the overlap in every possibile configuration of the line is enough to solve basically every puzzle. I highly encourage you to go try some of these puzzles on your own. Keep an eye out and see if you can come up with some more specific rules. If you want, the Wikipedia page has some great demonstrations of some more [Solution Techniques](https://en.wikipedia.org/wiki/Nonogram#Solution_techniques).
+
+We've made a few observations so far, so let's start writting them down to for when we go make the algorithm.
+1. Information can be extracted for a given line only using the current state of the line and its hint. It does not depend on the states of other lines.
 
