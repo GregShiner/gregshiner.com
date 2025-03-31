@@ -42,10 +42,10 @@ Before we get into the weeds of solving a problem, it's important to define the 
 4. Segment: A single number in a hint
 <!-- TODO: add graphics -->
 
-# How To Solve a Nonagram
+# A super basic solution
 The basic concept behind solving these puzzles is to repeatedly apply some rules to figure out what squares must or must not be filled in based on the hints and the current state of the game.
 One observation we can make about this game is that *almost* (We will discuss the exceptions later) all puzzles can be solved just by repeatedly applying some logic to each individual row and column.
-The simplest logic that can be used to do this is to first determine all of the possible valid states of a line.
+The simplest logic that can be used for this is to first determine all of the possible valid states of a line.
 These must be valid according to the clue and fit any constraints from the initial state of the line.
 For example, if we have a clue of just 4, and an empty line of 6 squares, there are 3 possible solutions.
 ![Possibilities from empty line with a hint of 4](./4line.svg)
@@ -55,8 +55,24 @@ So what happens when our initial line isnt't empty and has some squares already 
 ![Solution with a hint of 4 and some initial square](./4line_sol_w_initial.svg)
 Two things of interest happen now in this case. The first is that there is only 2 possible placements of the line of 4. If we try to place the segment further to the right, the solution will no longer be valid, because there will be 5 squares in a row instead of 4. We also see though that in all solutions, the right-most square is empty. This means that there is no possible way for that square to be filled in, so we can mark it as empty with an X.
 
+Now to solve a full puzzle, you simply apply this process to each row and column and repeat until it's (most likely) solved.
 There are a lot more rules you can apply, but this general notion of finding the overlap in every possibile configuration of the line is enough to solve basically every puzzle. I highly encourage you to go try some of these puzzles on your own. Keep an eye out and see if you can come up with some more specific rules. If you want, the Wikipedia page has some great demonstrations of some more [Solution Techniques](https://en.wikipedia.org/wiki/Nonogram#Solution_techniques).
-
-We've made a few observations so far, so let's start writting them down to for when we go make the algorithm.
+For now though, let's start writting down observations that we make along the way. This is a crucial step in the problem solving process.
 1. Information can be extracted for a given line only using the current state of the line and its hint. It does not depend on the states of other lines.
+  a. This process will be called "refining a line"
+2. A puzzle can be solved by refining each row and column repeatedly.
 
+# We can do better
+As you can imagine, the process of finding every possible solution of a line is quite slow. So how can we do better?
+When trying to solve this problem I went through many different simplifications of the problem.
+But the final solution I think is the most interesting so let's take a look at that one.
+This is an algorithm based on the [Simple Boxes](https://en.wikipedia.org/wiki/Nonogram#Simple_boxes) and [Simple Spaces](https://en.wikipedia.org/wiki/Nonogram#Simple_spaces) methods. 
+It takes the concepts from those algorithms and generalizes them to all possible states of a line, not just the beginning of the puzzle.
+At a high level, the algorithm looks like this:
+1. Find the left-most solution to a line (all segments placed as far left as possible)
+2. Find the right-most solution to a line (all segments placed as far right as possible)
+3. Any overlap between the same segment on both solutions must be filled.
+4. Any gap in between the same 2 segments on both solutions must be empty.
+
+Here is a quick example:
+{{< video src="OverlapAlg.mp4" >}}
