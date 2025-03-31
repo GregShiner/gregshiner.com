@@ -5,7 +5,7 @@
 baseurl = "/"
 languageCode = "en-us"
 title = "Greg Shiner"
-theme = "terminal"
+theme = ["hugo-video", "terminal"]
 
 [markup]
   [markup.goldmark]
