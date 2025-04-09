@@ -51,11 +51,11 @@ One observation we can make about this game is that *almost* (We will discuss th
 The simplest logic that can be used for this is to first determine all the possible valid states of a line.
 These must be valid according to the clue and fit any constraints from the initial state of the line.
 For example, if we have a clue of just 4, and an empty line of 6 squares, there are 3 possible solutions.
-![Possibilities from empty line with a hint of 4](./4line.svg)
+![Possibilities from empty line with a hint of 4](./svgs/4line.svg)
 From here, we can see that the middle 2 squares of the line *must* be filled in because in all cases, those 2 squares are filled in. But in the outer squares, there are cases where they can be both empty and filled, so we have no definite information about them. In cases where we have no new information, we just keep the square blank.
-![Solution from empty line with a hint of 4](./4line_sol.svg)
+![Solution from empty line with a hint of 4](./svgs/4line_sol.svg)
 So, what happens when our initial line isn't empty and has some squares already solved? In this scenario there may be fewer cases that are valid.
-![Solution with a hint of 4 and some initial square](./4line_sol_w_initial.svg)
+![Solution with a hint of 4 and some initial square](./svgs/4line_sol_w_initial.svg)
 Two things of interest happen now in this case.
 The first is that there is only 2 possible placements of the line of 4.
 If we try to place the segment further to the right, the solution will no longer be valid, because there will be 5 squares in a row instead of 4.
@@ -72,17 +72,17 @@ For now though, let's start writing down observations that we make along the way
 # We can do better
 As you can imagine, the process of finding every possible solution of a line is quite slow. So how can we do better?
 Even with a simple line with the clue (2, 3) and an empty line with a length of 10, we would have to compute 15 different permutations.
-![All hint permutations](./AllPermutations_cropped_shrunk.png)
+![All hint permutations](./images/AllPermutations_cropped_shrunk.png)
 If what we are after is the overlap between every solution, maybe there is some way to get the overlap without actually calculating every solution.
 Let's for a moment change our goal. Instead of looking for the overlap between *every* solution, let's look at just the overlap between *each segment*.
 When we restrict our line refinement to this new condition, we can simplify how we calculate the overlap.
 Now instead of calculating every possible solution of the line, we only have to find the possible positions of each segment.
-![All segment positions](./AllPositions_cropped_shrunk.png)
+![All segment positions](./images/AllPositions_cropped_shrunk.png)
 In this case specifically, we went from 15 positions to calculate, down to 10.
 In reality, the original method had the worst case growth of the product of the numbers of positions of each segment, (in reality, it would never hit this number because a lot of these permutations will be invalid) whereas now, we have reduced it to the sum.
 
 Let's take a look at what it would look like to refine a line with this new strategy. We will start with an empty line and place all the segments as far left as possible. Then we will duplicate this line below it. We're going to move around the segments on this line, so we will also track the overlap between the individual segments between the lines. As the segments slide to the right across their possible positions, watch how the overlap shrinks to its refined form.
-{{< video src="OverlapExplain.mp4" >}}
+{{< video src="videos/OverlapExplain.mp4" >}}
 Note that we can only look at the overlap between the individual segments instead of the general overlap between the lines.
 In this case here, the point in the middle where the red segment on the left solution overlaps with the blue segment on the right solution, we leave the cell blank.
 This is despite the fact that both the left and right solutions have that square filled in.
@@ -95,7 +95,7 @@ This means that we don't even need to calculate each possible position of each s
 We only need to find the left and right-most solutions to refine our line.
 Let's see what an algorithm might look like that just looks at these extremes.
 
-{{< video src="OverlapAlg.mp4" >}}
+{{< video src="videos/OverlapAlg.mp4" >}}
 
 This is an algorithm based on the [Simple Boxes](https://en.wikipedia.org/wiki/Nonogram#Simple_boxes) and [Simple Spaces](https://en.wikipedia.org/wiki/Nonogram#Simple_spaces) methods.
 It takes the concepts from those algorithms and generalizes them to all possible states of a line, not just the beginning of the puzzle.
@@ -107,7 +107,7 @@ At a high level, the algorithm looks like this:
 
 Let's take a look at another example showing some x's by having a non-empty initial state.
 
-{{< video src="OverlapX.mp4" >}}
+{{< video src="videos/OverlapX.mp4" >}}
 
 Now we can see that if we have some initial state on the line, the valid solutions are more limited. This can sometimes cause there to be no state where some squares are filled in. In this case, we mark it with an x. In this case, both segments only have 2 valid positions each. So once again we take the overlap between the matching segments and mark them as filled. But we can also mark the overlapping x's in the gap between the 2 segments. Note that we do have to apply a similar rule that only gaps between the same 2 segments can be marked as x's.
 
@@ -124,7 +124,7 @@ This is a good point to take a moment and recap what our algorithm looks like so
 
 It seems simple enough so far, but how do we even compute the left and right most solutions?
 As humans, this seems like a pretty simple task, but an algorithm that can do this that works in all cases is not as simple as it seems.
-To come up with this algorithm, lets try and reduce our requirements and see if we can glean some insights.
+To come up with this algorithm, let's try and reduce our requirements and see if we can glean some insights.
 First, we can observe that we only need 1 algorithm for both the left and right most solutions.
 If we only come up with one for the left-most solution, we can reuse it for the right-most solution.
 To do this, simply reverse the line and the hint, find the left-most solution of the flipped line, then reverse it back. 
@@ -134,6 +134,33 @@ This is what the case will likely be at the start of the puzzle when there's lit
 When we're talking about how a segment should be placed on a line, it would be useful to have a convention to describe where on a line a segment is being placed.
 Since we will be using an array of squares to represent a line, it would be useful to represent this placement as an index into the array.
 Let's define that when we say "this segment is at position *i*" we mean that the first, or left-most square, in the segment is placed at index i in the array, and it extends for its length to the right.
-For example this is what it would look like if we were to say that the segment is placed at position 2.
-![](./SegmentPositions.png)
+For example this is what it would look like if we were to say that the segment is placed at position, or index, 2.
+![Indexes in a line with a segment placed at i=2](./images/SegmentPositions.png)
 
+To come up with the left most solution of an empty line, we can use the following python code:
+```python
+from enum import Enum
+from typing import List
+# Represents the state of an individual square
+# An enum type can be one of any of the variants defined
+class SquareState(Enum):
+    UNKOWN = 0
+    FILLED = 1
+    EMPTY = 2
+
+# A segment length in a hint
+type Segment = int
+
+# This function takes as input a hint and the initial state of a line
+# Returns the left most solution of the line
+def find_left_sol(hint: List[Segment], line: List[SquareState]) -> List[SquareState]:
+    next_seg_pos = 0
+    for segment in hint:
+        for i in range(next_seg_pos, next_seg_pos + segment):
+            line[i] = SquareState.FILLED
+        next_seg_pos += segment + 1
+
+    return line
+```
+
+{{< video src="videos/BasicSol.mp4" >}}
