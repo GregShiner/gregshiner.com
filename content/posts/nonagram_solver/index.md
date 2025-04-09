@@ -38,7 +38,7 @@ This projects main technical goal is of course to build an algorithm that is abl
 Aside from the technical goals, the actual main goal of this project is to just learn. Learning by doing is absolutely the best way to hone any skill, and programming is by far no exception. This post will serve as a sort of dev log as I build and improve this project.
 
 # Terminology
-Before we get into the weeds of solving a problem, it's important to define the relevant terms.
+Before we get into the weeds of solving a problem, it's important to define the relevant terms. Here's a few that will appear througout this project.
 1. Square/Cell: A single box on the puzzle grid
 2. Line: Either an entire row or column of squares on the grid
 3. Hint/Clue: The given values on either the side or top
@@ -64,7 +64,7 @@ This means that there is no possible way for that square to be filled in, so we 
 
 Now to solve a full puzzle, you simply apply this process to each row and column and repeat until it's (most likely) solved.
 There are a lot more rules you can apply, but this general notion of finding the overlap in every possible configuration of the line is enough to solve basically every puzzle. I highly encourage you to go try some of these puzzles on your own. Keep an eye out and see if you can come up with some more specific rules. If you want, the Wikipedia page has some great demonstrations of some more [Solution Techniques](https://en.wikipedia.org/wiki/Nonogram#Solution_techniques).
-For now though, let's start writing down observations that we make along the way. This is a crucial step in the problem-solving process.
+For now though, let's identify two critical observations:
 1. Information can be extracted for a given line only using the current state of the line and its hint. It does not depend on the states of other lines.
   a. This process will be called "refining a line"
 2. A puzzle can be solved by refining each row and column repeatedly.
@@ -144,9 +144,9 @@ from typing import List
 # Represents the state of an individual square
 # An enum type can be one of any of the variants defined
 class SquareState(Enum):
-    UNKOWN = 0
-    FILLED = 1
-    EMPTY = 2
+    UNKOWN = 0 # Blank cell with an unknown state
+    FILLED = 1 # Marked cell that must be filled
+    EMPTY = 2  # Marked cell that must NOT be filled (x)
 
 # A segment length in a hint
 type Segment = int
@@ -154,13 +154,18 @@ type Segment = int
 # This function takes as input a hint and the initial state of a line
 # Returns the left most solution of the line
 def find_left_sol(hint: List[Segment], line: List[SquareState]) -> List[SquareState]:
-    next_seg_pos = 0
+    next_seg_pos = 0 # Tracks where the next segment must be placed
     for segment in hint:
-        for i in range(next_seg_pos, next_seg_pos + segment):
-            line[i] = SquareState.FILLED
-        next_seg_pos += segment + 1
+        for i in range(next_seg_pos, next_seg_pos + segment): # for each position from the start pos to the end position
+            line[i] = SquareState.FILLED # Set the state to FILLED
+        next_seg_pos += segment + 1 # Adjust start position for next segment to be after the end of the current segment + 1 for the gap
 
     return line
 ```
 
 {{< video src="videos/BasicSol.mp4" >}}
+
+While this algorithm is quite simple, it's quite inflexible and won't work in many cases except for the initial blank line.
+If there is an x in the initial state where any of the segments are being placed, it will fail.
+It will also fail if there are any filled squares where a segment isn't being placed.
+So we need to come up with a way to place the segments as far left as possible, that accounts for the initial state of the line.
