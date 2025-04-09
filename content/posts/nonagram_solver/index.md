@@ -89,7 +89,7 @@ This is despite the fact that both the left and right solutions have that square
 This is because there are still many permutations of the line that have that space empty.
 Looking only at the overlap between the individual segments prevents this issue.
 
-Now notice that the line on the top is the left-most solution, meaning every segment is placed as far left as possible, hence why we label it as such.
+Now notice that the line on the top is the left-most solution, meaning every segment is placed as far left as possible.
 As we slide the segments to the right as far as they can go, we end up with the right-most solution.
 This means that we don't even need to calculate each possible position of each segment.
 We only need to find the left and right-most solutions to refine our line.
@@ -109,4 +109,31 @@ Let's take a look at another example showing some x's by having a non-empty init
 
 {{< video src="OverlapX.mp4" >}}
 
-Now we can see 
+Now we can see that if we have some initial state on the line, the valid solutions are more limited. This can sometimes cause there to be no state where some squares are filled in. In this case, we mark it with an x. In this case, both segments only have 2 valid positions each. So once again we take the overlap between the matching segments and mark them as filled. But we can also mark the overlapping x's in the gap between the 2 segments. Note that we do have to apply a similar rule that only gaps between the same 2 segments can be marked as x's.
+
+<!-- TODO: Find a good example of this rule and animate it -->
+
+# Almost there
+This is a good point to take a moment and recap what our algorithm looks like so far.
+1. Pick a row or column
+2. Find the left-most solution
+3. Find the right-most solution
+4. Mark any overlap between the 2 same segments as filled
+5. Mark any gap between the 2 same segments as an x
+6. Repeat for every row and column until the puzzle is solved
+
+It seems simple enough so far, but how do we even compute the left and right most solutions?
+As humans, this seems like a pretty simple task, but an algorithm that can do this that works in all cases is not as simple as it seems.
+To come up with this algorithm, lets try and reduce our requirements and see if we can glean some insights.
+First, we can observe that we only need 1 algorithm for both the left and right most solutions.
+If we only come up with one for the left-most solution, we can reuse it for the right-most solution.
+To do this, simply reverse the line and the hint, find the left-most solution of the flipped line, then reverse it back. 
+
+Now let's just look at the case of having an empty initial line.
+This is what the case will likely be at the start of the puzzle when there's little already established information about individual cells.
+When we're talking about how a segment should be placed on a line, it would be useful to have a convention to describe where on a line a segment is being placed.
+Since we will be using an array of squares to represent a line, it would be useful to represent this placement as an index into the array.
+Let's define that when we say "this segment is at position *i*" we mean that the first, or left-most square, in the segment is placed at index i in the array, and it extends for its length to the right.
+For example this is what it would look like if we were to say that the segment is placed at position 2.
+![](./SegmentPositions.png)
+
