@@ -165,7 +165,27 @@ def find_left_sol(hint: List[Segment], line: List[SquareState]) -> List[SquareSt
 
 {{< video src="videos/BasicSol.mp4" >}}
 
+<!-- I'm not terribly happy w this section -->
+
 While this algorithm is quite simple, it's quite inflexible and won't work in many cases except for the initial blank line.
-If there is an x in the initial state where any of the segments are being placed, it will fail.
-It will also fail if there are any filled squares where a segment isn't being placed.
-So we need to come up with a way to place the segments as far left as possible, that accounts for the initial state of the line.
+It's important for the line solver to take into account the initial state of the line since the other lines that cross a given line may change the state of the line.
+So we need to come up with a way to place the segments as far left as possible, *that accounts for the initial state of the line.*
+
+A specific case where this approach will break is if there is already an x on the line. It may try to place a segment on top of the x
+One simple way we can fix this is to check if the placement of a segment is valid before we place it. If it is, place it down, if not shift it over to the right by 1 and try again.
+
+{{< video src="videos/AvoidX.mp4" >}}
+
+In this example, there is an x in the 4th square initially. So when the algorithm goes to place the green segment, it shifts it to the right until it is clear of the x.
+
+Now that we have a way of accounting for x's that are on the initial line, we need to account for the case of there being filled in squares on the initial line.
+This one is quite a lot trickier though. There are a lot of weird cases that can happen here, whereas with the x's its just simply "don't place a segment on top of an x."
+For example, there may not be a way to determine which segment a specific filled in square belongs to in the final solution.
+<!-- Maybe add an example -->
+Let's take a step back and see if we can find some patterns that emerge. What if we try changing how we think of the set of valid solutions?
+Previously, we just thought of them as a simple set or list of every valid permutation of the segments.
+What if instead, we tried thinking of this set as a tree?
+The root node will be the initial line. Each child of every node will be a different valid placement of the next segment.
+
+The algorithm I came up with to solve this problem is actually recursive. Although I'm sure there's a way to do it without recursion, this is the way that made the most sense to *me* so I stuck with it.
+This algorithm once again builds on top of the previous one but does some checking to see if a given placement of a segment causes itself or later placements to be invalid.
