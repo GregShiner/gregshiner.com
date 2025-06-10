@@ -165,21 +165,54 @@ def find_left_sol(hint: List[Segment], line: List[SquareState]) -> List[SquareSt
 
 {{< video src="videos/BasicSol.mp4" >}}
 
-<!-- I'm not terribly happy w this section -->
-
 While this algorithm is quite simple, it's quite inflexible and won't work in many cases except for the initial blank line.
 It's important for the line solver to take into account the initial state of the line since the other lines that cross a given line may change the state of the line.
+Because of this, there are two cases that can cause errors when using the current algorithm:
+1. If there is an x in the initial state where any of the segments are being placed, it will fail.
+2. It will also fail if there are any filled squares where a segment isn't being placed.
 So we need to come up with a way to place the segments as far left as possible, *that accounts for the initial state of the line.*
 
-A specific case where this approach will break is if there is already an x on the line. It may try to place a segment on top of the x
-One simple way we can fix this is to check if the placement of a segment is valid before we place it. If it is, place it down, if not shift it over to the right by 1 and try again.
+Let's start by solving the first problem, avoiding placing segments on top of x's. There is a fairly straight forward solution to this problem:
+If there is an x where you are about to place a segment, try placing it one place to the right until it fits.
+This makes it so that the segment only gets placed into the first spot where it fits. Let's modify our algorithm to do this now.
+
+```python
+# This function takes in a segment to place, an initial line, and a position to try placing it at
+# If the segment can be placed there, it will return the new line, otherwise, it returns None
+def checked_place_seg(seg: Segment, line: List[SquareState], pos: int) -> Optional[List[SquareState]]:
+    for i in range(pos, pos + seg):
+        if line[i] == SquareState.EMPTY:
+            return None
+
+        line[i] = SquareState.EMPTY
+
+    return line
+
+# This function takes as input a hint and the initial state of a line
+# Returns the left most solution of the line
+def find_left_sol(hint: List[Segment], line: List[SquareState]) -> Optional[List[SquareState]]:
+    next_seg_pos = 0 # Tracks where the next segment must be placed
+    for segment in hint:
+        for pos in range(next_seg_pos, len(line) - segment): # Try all positions from the next_seg_pos to the end of the line
+            line = checked_place_seg(segment, line, pos)
+            if line:
+                next_seg_pos = pos + segment + 1 # Adjust start position for next segment to be after the end of the current segment + 1 for the gap
+                break
+        else: # This block runs if the for loop finishes without hitting the break
+            return None # Return None if no valid placement exists for the segment
+
+
+    return line
+```
+
+Here is an example with this new algorithm:
 
 {{< video src="videos/AvoidX.mp4" >}}
 
 In this example, there is an x in the 4th square initially. So when the algorithm goes to place the green segment, it shifts it to the right until it is clear of the x.
 
 Now that we have a way of accounting for x's that are on the initial line, we need to account for the case of there being filled in squares on the initial line.
-This one is quite a lot trickier though. There are a lot of weird cases that can happen here, whereas with the x's its just simply "don't place a segment on top of an x."
+This one is quite a lot trickier though. There are a lot of weird cases that can happen here, whereas with the x's it's just simply "don't place a segment on top of an x."
 For example, there may not be a way to determine which segment a specific filled in square belongs to in the final solution.
 <!-- Maybe add an example -->
 Let's take a step back and see if we can find some patterns that emerge. What if we try changing how we think of the set of valid solutions?
