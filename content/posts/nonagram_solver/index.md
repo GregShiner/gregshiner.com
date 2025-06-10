@@ -17,7 +17,7 @@ Nonagram is one of my favorite puzzles. It's a picture-based logic puzzle where 
 Each puzzle has a set of numbers to be used as "hints" that lead you to the solution to the puzzle.
 
 {{<figure
-  src="nonagram_example.png"
+  src="images/nonagram_example.png"
   alt="Nonagram Example"
   caption="Source: <a href='https://en.wikipedia.org/wiki/Nonogram#Example' style='color:Blue'>Wikipedia</a>"
 >}}
@@ -206,9 +206,7 @@ def find_left_sol(hint: List[Segment], line: List[SquareState]) -> Optional[List
 ```
 
 Here is an example with this new algorithm:
-
 {{< video src="videos/AvoidX.mp4" >}}
-
 In this example, there is an x in the 4th square initially. So when the algorithm goes to place the green segment, it shifts it to the right until it is clear of the x.
 
 Now that we have a way of accounting for x's that are on the initial line, we need to account for the case of there being filled in squares on the initial line.
