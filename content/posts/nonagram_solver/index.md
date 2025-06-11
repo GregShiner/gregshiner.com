@@ -39,7 +39,7 @@ This projects main technical goal is of course to build an algorithm that is abl
 Aside from the technical goals, the actual main goal of this project is to just learn. Learning by doing is absolutely the best way to hone any skill, and programming is by far no exception. This post will serve as a sort of dev log as I build and improve this project.
 
 # Terminology
-Before we get into the weeds of solving a problem, it's important to define the relevant terms. Here's a few that will appear througout this project.
+Before we get into the weeds of solving a problem, it's important to define the relevant terms. Here's a few that will appear throughout this project.
 1. Square/Cell: A single box on the puzzle grid
 2. Line: Either an entire row or column of squares on the grid
 3. Hint/Clue: The given values on either the side or top
@@ -66,8 +66,7 @@ This means that there is no possible way for that square to be filled in, so we 
 Now to solve a full puzzle, you simply apply this process to each row and column and repeat until it's (most likely) solved.
 There are a lot more rules you can apply, but this general notion of finding the overlap in every possible configuration of the line is enough to solve basically every puzzle. I highly encourage you to go try some of these puzzles on your own. Keep an eye out and see if you can come up with some more specific rules. If you want, the Wikipedia page has some great demonstrations of some more [Solution Techniques](https://en.wikipedia.org/wiki/Nonogram#Solution_techniques).
 For now though, let's identify two critical observations:
-1. Information can be extracted for a given line only using the current state of the line and its hint. It does not depend on the states of other lines.
-  a. This process will be called "refining a line"
+1. Information can be extracted for a given line only using the current state of the line and its hint. It does not depend on the states of other lines. This process is called "refining" a line.
 2. A puzzle can be solved by refining each row and column repeatedly.
 
 # We can do better
@@ -126,17 +125,19 @@ This is a good point to take a moment and recap what our algorithm looks like so
 It seems simple enough so far, but how do we even compute the left and right most solutions?
 As humans, this seems like a pretty simple task, but an algorithm that can do this that works in all cases is not as simple as it seems.
 To come up with this algorithm, let's try and reduce our requirements and see if we can glean some insights.
-First, we can observe that we only need 1 algorithm for both the left and right most solutions.
+
+First, we can observe that we only need 1 algorithm for both the left-most and right-most solutions.
 If we only come up with one for the left-most solution, we can reuse it for the right-most solution.
 To do this, simply reverse the line and the hint, find the left-most solution of the flipped line, then reverse it back. 
 
-Now let's just look at the case of having an empty initial line.
-This is what the case will likely be at the start of the puzzle when there's little already established information about individual cells.
 When we're talking about how a segment should be placed on a line, it would be useful to have a convention to describe where on a line a segment is being placed.
 Since we will be using an array of squares to represent a line, it would be useful to represent this placement as an index into the array.
 Let's define that when we say "this segment is at position *i*" we mean that the first, or left-most square, in the segment is placed at index i in the array, and it extends for its length to the right.
 For example this is what it would look like if we were to say that the segment is placed at position, or index, 2.
 ![Indexes in a line with a segment placed at i=2](./images/SegmentPositions.png)
+
+For now, let's simplify our requirements again and only look at the case of having an empty initial line.
+This is what the case will likely be at the start of the puzzle when there's little already established information about individual cells.
 
 To come up with the left most solution of an empty line, we can use the following python code:
 ```python
@@ -169,8 +170,8 @@ def find_left_sol(hint: List[Segment], line: List[SquareState]) -> List[SquareSt
 While this algorithm is quite simple, it's quite inflexible and won't work in many cases except for the initial blank line.
 It's important for the line solver to take into account the initial state of the line since the other lines that cross a given line may change the state of the line.
 Because of this, there are two cases that can cause errors when using the current algorithm:
-1. If there is an x in the initial state where any of the segments are being placed, it will fail.
-2. It will also fail if there are any filled squares where a segment isn't being placed.
+1. If there is an x in the initial state where any of the segments are being placed
+2. If there are any filled squares where a segment isn't being placed
 
 So we need to come up with a way to place the segments as far left as possible, *that accounts for the initial state of the line.*
 
