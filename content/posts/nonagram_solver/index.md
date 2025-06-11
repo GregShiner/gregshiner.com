@@ -12,7 +12,7 @@ readingTime = false
 hideComments = false
 color = "" #color from the theme settings
 +++
-*Note: This blog post and project is still a work in progress. The animations in here especially are quite time-consuming to make, so this post actually lags behind the progress of the program itself.*
+*Note: This blog post and project are still works in progress. The animations in here especially are quite time-consuming to make, so this post actually lags behind the progress of the program itself.*
 # What's a Nonagram?
 Nonagram is one of my favorite puzzles. It's a picture-based logic puzzle where you have a grid of squares that must be filled or left unfilled to create a picture according to some rules.
 Each puzzle has a set of numbers to be used as "hints" that lead you to the solution to the puzzle.
