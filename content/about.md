@@ -2,4 +2,12 @@ Hi! I'm Greg Shiner. I'm a programmer and I like building cool stuff. Here's som
 
 - Rust
 - Python
+- C
 - Functional Programming
+- Game Theory
+- Data Engineering
+- Operating Systems
+- Embedded Systems
+- Compilers and Interpreters
+- Networking
+- Systems Administration

@@ -12,6 +12,7 @@ readingTime = false
 hideComments = false
 color = "" #color from the theme settings
 +++
+*Note: This blog post and project is still a work in progress. The animations in here especially are quite time-consuming to make, so this post actually lags behind the progress of the program itself.*
 # What's a Nonagram?
 Nonagram is one of my favorite puzzles. It's a picture-based logic puzzle where you have a grid of squares that must be filled or left unfilled to create a picture according to some rules.
 Each puzzle has a set of numbers to be used as "hints" that lead you to the solution to the puzzle.
@@ -217,6 +218,3 @@ Let's take a step back and see if we can find some patterns that emerge. What if
 Previously, we just thought of them as a simple set or list of every valid permutation of the segments.
 What if instead, we tried thinking of this set as a tree?
 The root node will be the initial line. Each child of every node will be a different valid placement of the next segment.
-
-The algorithm I came up with to solve this problem is actually recursive. Although I'm sure there's a way to do it without recursion, this is the way that made the most sense to *me* so I stuck with it.
-This algorithm once again builds on top of the previous one but does some checking to see if a given placement of a segment causes itself or later placements to be invalid.
