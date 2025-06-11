@@ -171,6 +171,7 @@ It's important for the line solver to take into account the initial state of the
 Because of this, there are two cases that can cause errors when using the current algorithm:
 1. If there is an x in the initial state where any of the segments are being placed, it will fail.
 2. It will also fail if there are any filled squares where a segment isn't being placed.
+
 So we need to come up with a way to place the segments as far left as possible, *that accounts for the initial state of the line.*
 
 Let's start by solving the first problem, avoiding placing segments on top of x's. There is a fairly straight forward solution to this problem:
