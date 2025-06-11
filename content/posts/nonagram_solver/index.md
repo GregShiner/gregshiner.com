@@ -1,5 +1,5 @@
 +++
-title = "Let's make a nonagram solver!"
+title = "Let's make a nonagram solver! (Part 1)"
 date = "2025-02-23T17:05:00-05:00"
 author = "Greg Shiner"
 authorTwitter = "" #do not include @
@@ -8,11 +8,20 @@ cover = ""
 # keywords = ["", ""]
 description = "An exploration of puzzle solving and optimization"
 showFullContent = false
-readingTime = false
+readingTime = true
 hideComments = false
 color = "" #color from the theme settings
 +++
+# Author's Note
 *Note: This blog post and project are still works in progress. The animations in here especially are quite time-consuming to make, so this post actually lags behind the progress of the program itself.*
+
+This is a part of a series of blog posts on this topic.
+This first part will be a mostly non-technical explainer of the underlying algorithm.
+It will focus on the concepts and building an intuition for how and why the algorithm works the way it does.
+It will include an occasional Python snippet to help illustrate some concepts, but this is not a technical explainer.
+The next parts will be exploring the technical details of the implementation and optimization.
+
+You can follow along with the development of this project on [GitHub](https://github.com/GregShiner/nonagram)
 # What's a Nonagram?
 Nonagram is one of my favorite puzzles. It's a picture-based logic puzzle where you have a grid of squares that must be filled or left unfilled to create a picture according to some rules.
 Each puzzle has a set of numbers to be used as "hints" that lead you to the solution to the puzzle.
